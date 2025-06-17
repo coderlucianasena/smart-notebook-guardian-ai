@@ -90,11 +90,11 @@
 
 /* Custom gradients and animations */
 .gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #16a34a 0%, #065f46 100%);
 }
 
 .gradient-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.1) 0%, rgba(6, 95, 70, 0.1) 100%);
 }
 
 .glass-effect {

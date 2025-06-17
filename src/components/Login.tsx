@@ -20,12 +20,23 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simular autenticação
+    // Simular autenticação com credenciais de teste
     setTimeout(() => {
-      if (credentials.username && credentials.password) {
+      // Credenciais de teste
+      const validCredentials = [
+        { username: 'admin', password: 'admin123', role: 'Administrador' },
+        { username: 'operador', password: 'operador123', role: 'Operador' },
+        { username: 'teste', password: '123456', role: 'Operador' }
+      ];
+
+      const validUser = validCredentials.find(
+        cred => cred.username === credentials.username && cred.password === credentials.password
+      );
+
+      if (validUser) {
         const user = {
-          name: credentials.username,
-          role: credentials.username === 'admin' ? 'Administrador' : 'Operador'
+          name: validUser.username,
+          role: validUser.role
         };
         onLogin(user);
         toast({
@@ -35,7 +46,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       } else {
         toast({
           title: "Erro no login",
-          description: "Usuário e senha são obrigatórios",
+          description: "Usuário ou senha incorretos",
           variant: "destructive",
         });
       }
@@ -108,10 +119,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </Button>
           </form>
           
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-white/60 text-xs">
-              Use qualquer usuário e senha para demonstração
+              Credenciais de teste:
             </p>
+            <div className="text-white/80 text-xs space-y-1">
+              <p><strong>Admin:</strong> admin / admin123</p>
+              <p><strong>Operador:</strong> operador / operador123</p>
+              <p><strong>Teste:</strong> teste / 123456</p>
+            </div>
           </div>
         </CardContent>
       </Card>
