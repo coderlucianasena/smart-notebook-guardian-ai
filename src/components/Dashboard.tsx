@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Computer, Notebook, User, Lock, Barcode, Key, MessageCircle, PieChart } from 'lucide-react';
+import { Computer, Notebook, User, Lock, Barcode, Key, MessageCircle, PieChart, Moon, Sun } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import EquipmentScanner from './EquipmentScanner';
 import EquipmentManagement from './EquipmentManagement';
@@ -17,6 +16,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showChat, setShowChat] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   
   const [stats, setStats] = useState({
     totalEquipment: 24,
@@ -24,6 +24,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     onLoan: 6,
     overdueLoans: 2
   });
+
+  // Toggle dark mode
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Dados para gráficos
   const sectorData = [
@@ -42,8 +51,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   ];
 
   const [recentActivity] = useState([
-    { id: 1, action: 'Empréstimo', item: 'Notebook Dell Latitude 5520', user: 'João Silva', time: '10:30' },
-    { id: 2, action: 'Devolução', item: 'Mouse Logitech MX3', user: 'Maria Santos', time: '09:15' },
+    { id: 1, action: 'Entrada', item: 'Notebook Dell Latitude 5520', user: 'João Silva', time: '10:30' },
+    { id: 2, action: 'Saída', item: 'Mouse Logitech MX3', user: 'Maria Santos', time: '09:15' },
     { id: 3, action: 'Cadastro', item: 'Tablet Samsung Galaxy Tab', user: 'Admin', time: '08:45' },
   ]);
 
@@ -52,7 +61,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     { id: 'analytics', label: 'Gráficos', icon: PieChart },
     { id: 'scanner', label: 'Scanner', icon: Barcode },
     { id: 'equipment', label: 'Equipamentos', icon: Notebook },
-    { id: 'loans', label: 'Empréstimos', icon: Key },
+    { id: 'loans', label: 'Entrada e Saída', icon: Key },
   ];
 
   const renderContent = () => {
@@ -102,7 +111,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                       <Tooltip />
                       <Legend />
                       <Bar dataKey="disponivel" fill="#16a34a" name="Disponível" />
-                      <Bar dataKey="emprestado" fill="#dc2626" name="Emprestado" />
+                      <Bar dataKey="emprestado" fill="#dc2626" name="Em Uso" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -227,11 +236,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${
-                          activity.action === 'Empréstimo' ? 'bg-blue-500' :
-                          activity.action === 'Devolução' ? 'bg-green-500' : 'bg-purple-500'
+                          activity.action === 'Entrada' ? 'bg-blue-500' :
+                          activity.action === 'Saída' ? 'bg-green-500' : 'bg-purple-500'
                         }`}></div>
                         <div>
                           <p className="font-medium">{activity.action}: {activity.item}</p>
@@ -250,9 +259,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
@@ -260,16 +269,25 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <Computer className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Sistema de Controle
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Controle de Estoque da TI - Agropalma v.s.
                 </h1>
-                <p className="text-sm text-gray-500">
-                  Notebooks e Acessórios
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Gestão de Notebooks e Acessórios
                 </p>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setDarkMode(!darkMode)}
+                className="flex items-center space-x-2"
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                <span>{darkMode ? 'Light' : 'Dark'}</span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -280,8 +298,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <span>Assistente IA</span>
               </Button>
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.role}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{user.role}</p>
               </div>
               <Button variant="outline" onClick={onLogout}>
                 Sair
@@ -303,8 +321,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                     activeTab === item.id
-                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-l-4 border-blue-700'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -322,7 +340,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       </div>
 
       {/* AI Chat Modal */}
-      {showChat && <AIChat onClose={() => setShowChat(false)} />}
+      {showChat && <AIChat onClose={() => setShowChat(false)} stats={stats} />}
     </div>
   );
 };

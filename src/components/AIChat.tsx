@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,12 @@ import { X, Send, Bot, User } from 'lucide-react';
 
 interface AIChatProps {
   onClose: () => void;
+  stats: {
+    totalEquipment: number;
+    availableEquipment: number;
+    onLoan: number;
+    overdueLoans: number;
+  };
 }
 
 interface Message {
@@ -16,12 +21,12 @@ interface Message {
   timestamp: string;
 }
 
-const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
+const AIChat: React.FC<AIChatProps> = ({ onClose, stats }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       type: 'ai',
-      content: 'Olá! Sou seu assistente de TI. Como posso ajudar você hoje? Posso auxiliar com informações sobre equipamentos, empréstimos, devoluções e procedimentos do sistema.',
+      content: 'Olá! Sou seu assistente do Sistema de Controle de Estoque da TI da Agropalma v.s. Como posso ajudar você hoje? Posso fornecer informações sobre equipamentos, entrada e saída, relatórios e procedimentos do sistema.',
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
@@ -37,43 +42,68 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Respostas pré-definidas da IA
+  // Dados dos equipamentos
+  const equipmentData = {
+    notebooks: { total: 24, disponivel: 18, emUso: 6 },
+    mouses: { total: 33, disponivel: 25, emUso: 8 },
+    teclados: { total: 27, disponivel: 22, emUso: 5 },
+    monitores: { total: 18, disponivel: 15, emUso: 3 },
+    cabos: { total: 57, disponivel: 45, emUso: 12 }
+  };
+
+  // Respostas aprimoradas da IA
   const getAIResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
+    if (message.includes('quantos') && (message.includes('notebook') || message.includes('computador'))) {
+      return `Temos ${equipmentData.notebooks.disponivel} notebooks disponíveis de um total de ${equipmentData.notebooks.total} unidades. Atualmente ${equipmentData.notebooks.emUso} estão em uso.`;
+    }
+    
+    if (message.includes('quantos') && message.includes('equipamento')) {
+      return `No momento temos:\n• ${stats.totalEquipment} equipamentos no total\n• ${stats.availableEquipment} equipamentos disponíveis\n• ${stats.onLoan} equipamentos em uso\n• ${stats.overdueLoans} equipamentos em atraso\n\nDetalhamento por tipo:\n• Notebooks: ${equipmentData.notebooks.disponivel} disponíveis\n• Mouses: ${equipmentData.mouses.disponivel} disponíveis\n• Teclados: ${equipmentData.teclados.disponivel} disponíveis\n• Monitores: ${equipmentData.monitores.disponivel} disponíveis\n• Cabos: ${equipmentData.cabos.disponivel} disponíveis`;
+    }
+    
     if (message.includes('notebook') || message.includes('laptop')) {
-      return 'Temos 18 notebooks disponíveis no momento. Para emprestar um notebook, vá até a seção "Empréstimos" e selecione o equipamento desejado. Você precisará informar o usuário responsável e a data prevista de devolução.';
+      return `Informações sobre notebooks:\n• Total: ${equipmentData.notebooks.total} unidades\n• Disponíveis: ${equipmentData.notebooks.disponivel}\n• Em uso: ${equipmentData.notebooks.emUso}\n\nPara dar entrada ou saída de um notebook, vá até a seção "Entrada e Saída" e selecione o equipamento desejado.`;
     }
     
     if (message.includes('mouse') || message.includes('teclado')) {
-      return 'Nosso estoque atual inclui 25 mouses e 22 teclados disponíveis. Estes acessórios podem ser emprestados através do sistema. Posso ajudar com o processo de empréstimo?';
+      return `Acessórios disponíveis:\n• Mouses: ${equipmentData.mouses.disponivel} de ${equipmentData.mouses.total} disponíveis\n• Teclados: ${equipmentData.teclados.disponivel} de ${equipmentData.teclados.total} disponíveis\n\nEstes acessórios podem ser registrados para entrada e saída através do sistema.`;
     }
     
-    if (message.includes('empréstimo') || message.includes('emprestar')) {
-      return 'Para fazer um empréstimo: 1) Acesse a seção "Empréstimos", 2) Clique em "Novo Empréstimo", 3) Escaneie ou digite o código do equipamento, 4) Informe os dados do usuário, 5) Confirme a operação.';
+    if (message.includes('entrada') || message.includes('saída')) {
+      return 'Para registrar entrada e saída: 1) Acesse a seção "Entrada e Saída", 2) Clique em "Nova Operação", 3) Escaneie ou digite o código do equipamento (formato: 04B-IN001577), 4) Informe os dados do responsável, 5) Confirme a operação.';
     }
     
-    if (message.includes('devolução') || message.includes('devolver')) {
-      return 'Para registrar uma devolução: 1) Acesse "Empréstimos", 2) Encontre o empréstimo ativo, 3) Clique em "Devolver", 4) Verifique o estado do equipamento, 5) Confirme a devolução.';
+    if (message.includes('código') || message.includes('patrimônio')) {
+      return 'Os códigos patrimoniais seguem o formato alfanumérico: 04B-IN001577. Cada equipamento possui um código único que pode ser escaneado ou digitado manualmente no sistema.';
     }
     
     if (message.includes('scanner') || message.includes('código de barras')) {
-      return 'O scanner de código de barras está disponível na seção "Scanner". Você pode usar a câmera do dispositivo para ler códigos de barras dos equipamentos e acessar rapidamente suas informações.';
+      return 'O scanner de código de barras está disponível na seção "Scanner". Você pode usar a câmera do dispositivo para ler códigos patrimoniais dos equipamentos e acessar rapidamente suas informações para edição ou visualização do histórico.';
     }
     
     if (message.includes('relatório') || message.includes('gráfico')) {
-      return 'Os relatórios e gráficos estão disponíveis na seção "Gráficos". Lá você pode visualizar estatísticas por setor, status dos equipamentos e outras métricas importantes.';
+      return 'Os relatórios e gráficos estão disponíveis na seção "Gráficos". Lá você pode visualizar estatísticas por setor, status dos equipamentos, taxa de utilização e outras métricas importantes do estoque da TI.';
     }
     
-    if (message.includes('cadastrar') || message.includes('adicionar')) {
-      return 'Para cadastrar novos equipamentos: 1) Vá para "Equipamentos", 2) Clique em "Adicionar Equipamento", 3) Preencha todas as informações necessárias, 4) Gere ou insira o código de barras, 5) Salve o cadastro.';
+    if (message.includes('dell') || message.includes('chamado')) {
+      return 'Para equipamentos Dell, é possível abrir chamados de suporte diretamente pelo sistema. Após escanear um equipamento Dell, aparecerá a opção "Abrir Chamado Dell" que preencherá automaticamente um e-mail com as informações necessárias.';
+    }
+    
+    if (message.includes('dark') || message.includes('escuro') || message.includes('tema')) {
+      return 'O sistema possui modo claro e escuro. Você pode alternar entre os temas clicando no botão com ícone de lua/sol no cabeçalho da aplicação.';
+    }
+    
+    if (message.includes('agropalma') || message.includes('versão sena')) {
+      return 'Este é o Sistema de Controle de Estoque da TI da Agropalma versão Sena (v.s.). Foi desenvolvido especificamente para gerenciar notebooks e acessórios da empresa, incluindo funcionalidades de scanner, relatórios e integração com suporte Dell.';
     }
     
     if (message.includes('ajuda') || message.includes('help')) {
-      return 'Posso ajudar com: \n• Informações sobre equipamentos disponíveis\n• Processo de empréstimo e devolução\n• Como usar o scanner de código de barras\n• Cadastro de novos equipamentos\n• Consulta de relatórios\n\nQual dessas opções você gostaria de saber mais?';
+      return 'Posso ajudar com:\n• Informações sobre equipamentos disponíveis\n• Processo de entrada e saída\n• Como usar o scanner de código de barras\n• Cadastro de novos equipamentos\n• Consulta de relatórios e gráficos\n• Abertura de chamados Dell\n• Funcionalidades do sistema\n\nQual dessas opções você gostaria de saber mais?';
     }
     
-    return 'Entendi sua pergunta. Para uma resposta mais específica, posso ajudar com informações sobre equipamentos, empréstimos, devoluções, scanner de código de barras, cadastros ou relatórios. Sobre qual dessas áreas você gostaria de saber mais?';
+    return `Entendi sua pergunta sobre o sistema de controle de estoque da Agropalma. Atualmente temos ${stats.availableEquipment} equipamentos disponíveis. Para uma resposta mais específica, posso ajudar com informações sobre equipamentos, entrada e saída, scanner, relatórios ou funcionalidades do sistema. Sobre qual dessas áreas você gostaria de saber mais?`;
   };
 
   const handleSendMessage = async () => {
@@ -117,7 +147,7 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="flex items-center space-x-2">
             <Bot className="w-6 h-6 text-green-600" />
-            <span>Assistente de TI</span>
+            <span>Assistente IA - Agropalma v.s.</span>
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -126,7 +156,7 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
         
         <CardContent className="flex-1 flex flex-col space-y-4 p-4">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto space-y-4 border rounded-lg p-4 bg-gray-50">
+          <div className="flex-1 overflow-y-auto space-y-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -145,11 +175,11 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
                   <div className={`rounded-lg p-3 ${
                     message.type === 'user'
                       ? 'bg-blue-500 text-white'
-                      : 'bg-white border'
+                      : 'bg-white dark:bg-gray-700 border'
                   }`}>
                     <p className="text-sm whitespace-pre-line">{message.content}</p>
                     <p className={`text-xs mt-1 ${
-                      message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                      message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {message.timestamp}
                     </p>
@@ -164,7 +194,7 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
                   <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">
                     <Bot className="w-4 h-4" />
                   </div>
-                  <div className="bg-white border rounded-lg p-3">
+                  <div className="bg-white dark:bg-gray-700 border rounded-lg p-3">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -196,23 +226,23 @@ const AIChat: React.FC<AIChatProps> = ({ onClose }) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setInputMessage('Como emprestar um notebook?')}
+              onClick={() => setInputMessage('Quantos notebooks temos disponíveis?')}
             >
-              Como emprestar?
+              Notebooks disponíveis
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setInputMessage('Quantos equipamentos temos disponíveis?')}
+              onClick={() => setInputMessage('Quantos equipamentos temos no total?')}
             >
-              Equipamentos disponíveis
+              Total de equipamentos
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setInputMessage('Como usar o scanner?')}
+              onClick={() => setInputMessage('Como fazer entrada e saída?')}
             >
-              Usar scanner
+              Entrada e saída
             </Button>
           </div>
         </CardContent>
