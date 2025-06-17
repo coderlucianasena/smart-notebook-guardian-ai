@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Computer, Notebook, User, Lock, Barcode, Key } from 'lucide-react';
+import { Computer, Notebook, User, Lock, Barcode, Key, MessageCircle, PieChart } from 'lucide-react';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import EquipmentScanner from './EquipmentScanner';
 import EquipmentManagement from './EquipmentManagement';
 import LoanManagement from './LoanManagement';
+import AIChat from './AIChat';
 
 interface DashboardProps {
   user: { name: string; role: string };
@@ -14,12 +16,30 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showChat, setShowChat] = useState(false);
+  
   const [stats, setStats] = useState({
     totalEquipment: 24,
     availableEquipment: 18,
     onLoan: 6,
     overdueLoans: 2
   });
+
+  // Dados para gráficos
+  const sectorData = [
+    { name: 'TI', value: 12, color: '#16a34a' },
+    { name: 'RH', value: 4, color: '#059669' },
+    { name: 'Financeiro', value: 3, color: '#10b981' },
+    { name: 'Marketing', value: 5, color: '#34d399' },
+  ];
+
+  const equipmentByType = [
+    { name: 'Notebooks', disponivel: 18, emprestado: 6, total: 24 },
+    { name: 'Mouses', disponivel: 25, emprestado: 8, total: 33 },
+    { name: 'Teclados', disponivel: 22, emprestado: 5, total: 27 },
+    { name: 'Monitores', disponivel: 15, emprestado: 3, total: 18 },
+    { name: 'Cabos', disponivel: 45, emprestado: 12, total: 57 },
+  ];
 
   const [recentActivity] = useState([
     { id: 1, action: 'Empréstimo', item: 'Notebook Dell Latitude 5520', user: 'João Silva', time: '10:30' },
@@ -29,6 +49,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   const navigation = [
     { id: 'dashboard', label: 'Dashboard', icon: Computer },
+    { id: 'analytics', label: 'Gráficos', icon: PieChart },
     { id: 'scanner', label: 'Scanner', icon: Barcode },
     { id: 'equipment', label: 'Equipamentos', icon: Notebook },
     { id: 'loans', label: 'Empréstimos', icon: Key },
@@ -36,6 +57,92 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'analytics':
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Gráfico de Pizza - Equipamentos por Setor */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Equipamentos por Setor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsPieChart>
+                      <Pie
+                        data={sectorData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {sectorData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Gráfico de Barras - Equipamentos por Tipo */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Status dos Equipamentos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={equipmentByType}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="disponivel" fill="#16a34a" name="Disponível" />
+                      <Bar dataKey="emprestado" fill="#dc2626" name="Emprestado" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Cards de estatísticas detalhadas */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-green-600">Taxa de Utilização</h3>
+                    <p className="text-3xl font-bold text-green-700">75%</p>
+                    <p className="text-sm text-muted-foreground">Equipamentos em uso</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-blue-600">Setor com Mais Equipamentos</h3>
+                    <p className="text-2xl font-bold text-blue-700">TI</p>
+                    <p className="text-sm text-muted-foreground">12 equipamentos</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-orange-600">Tipo Mais Solicitado</h3>
+                    <p className="text-2xl font-bold text-orange-700">Notebooks</p>
+                    <p className="text-sm text-muted-foreground">24 unidades totais</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
       case 'scanner':
         return <EquipmentScanner />;
       case 'equipment':
@@ -163,6 +270,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             </div>
             
             <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowChat(!showChat)}
+                className="flex items-center space-x-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Assistente IA</span>
+              </Button>
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
                 <p className="text-xs text-gray-500">{user.role}</p>
@@ -204,6 +320,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
         </div>
       </div>
+
+      {/* AI Chat Modal */}
+      {showChat && <AIChat onClose={() => setShowChat(false)} />}
     </div>
   );
 };
