@@ -270,7 +270,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Controle de Estoque da TI - Agropalma v.s.
+                  Sistema de Controle de Estoque da TI v.s.
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Gestão de Notebooks e Acessórios

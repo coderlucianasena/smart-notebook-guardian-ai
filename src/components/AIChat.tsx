@@ -26,7 +26,7 @@ const AIChat: React.FC<AIChatProps> = ({ onClose, stats }) => {
     {
       id: 1,
       type: 'ai',
-      content: 'Olá! Sou seu assistente do Sistema de Controle de Estoque da TI da Agropalma v.s. Como posso ajudar você hoje? Posso fornecer informações sobre equipamentos, entrada e saída, relatórios e procedimentos do sistema.',
+      content: 'Olá! Sou seu assistente do Sistema de Controle de Estoque da TI v.s. Como posso ajudar você hoje? Posso fornecer informações sobre equipamentos, entrada e saída, relatórios e procedimentos do sistema.',
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
@@ -95,15 +95,15 @@ const AIChat: React.FC<AIChatProps> = ({ onClose, stats }) => {
       return 'O sistema possui modo claro e escuro. Você pode alternar entre os temas clicando no botão com ícone de lua/sol no cabeçalho da aplicação.';
     }
     
-    if (message.includes('agropalma') || message.includes('versão sena')) {
-      return 'Este é o Sistema de Controle de Estoque da TI da Agropalma versão Sena (v.s.). Foi desenvolvido especificamente para gerenciar notebooks e acessórios da empresa, incluindo funcionalidades de scanner, relatórios e integração com suporte Dell.';
+    if (message.includes('versão sena') || message.includes('v.s.')) {
+      return 'Este é o Sistema de Controle de Estoque da TI versão Sena (v.s.). Foi desenvolvido especificamente para gerenciar notebooks e acessórios, incluindo funcionalidades de scanner, relatórios e integração com suporte Dell.';
     }
     
     if (message.includes('ajuda') || message.includes('help')) {
       return 'Posso ajudar com:\n• Informações sobre equipamentos disponíveis\n• Processo de entrada e saída\n• Como usar o scanner de código de barras\n• Cadastro de novos equipamentos\n• Consulta de relatórios e gráficos\n• Abertura de chamados Dell\n• Funcionalidades do sistema\n\nQual dessas opções você gostaria de saber mais?';
     }
     
-    return `Entendi sua pergunta sobre o sistema de controle de estoque da Agropalma. Atualmente temos ${stats.availableEquipment} equipamentos disponíveis. Para uma resposta mais específica, posso ajudar com informações sobre equipamentos, entrada e saída, scanner, relatórios ou funcionalidades do sistema. Sobre qual dessas áreas você gostaria de saber mais?`;
+    return `Entendi sua pergunta sobre o sistema de controle de estoque. Atualmente temos ${stats.availableEquipment} equipamentos disponíveis. Para uma resposta mais específica, posso ajudar com informações sobre equipamentos, entrada e saída, scanner, relatórios ou funcionalidades do sistema. Sobre qual dessas áreas você gostaria de saber mais?`;
   };
 
   const handleSendMessage = async () => {
@@ -147,7 +147,7 @@ const AIChat: React.FC<AIChatProps> = ({ onClose, stats }) => {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="flex items-center space-x-2">
             <Bot className="w-6 h-6 text-green-600" />
-            <span>Assistente IA - Agropalma v.s.</span>
+            <span>Assistente IA - Sistema TI v.s.</span>
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
