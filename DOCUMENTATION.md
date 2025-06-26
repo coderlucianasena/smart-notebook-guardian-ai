@@ -1,9 +1,9 @@
 
-# Sistema de Controle de Estoque da TI da Agropalma v.s.
+# Sistema de Controle de Estoque da TI v.s.
 
 ## Visão Geral
 
-O Sistema de Controle de Estoque da TI da Agropalma versão Sena (v.s.) é uma aplicação web desenvolvida para gerenciar notebooks e acessórios de tecnologia da informação da empresa Agropalma. O sistema oferece funcionalidades completas de controle de entrada e saída de equipamentos, scanner de código de barras, relatórios e assistente de IA.
+O Sistema de Controle de Estoque da TI versão Sena (v.s.) é uma aplicação web desenvolvida para gerenciar notebooks e acessórios de tecnologia da informação. O sistema oferece funcionalidades completas de controle de entrada e saída de equipamentos, scanner de código de barras, relatórios e assistente de IA.
 
 ## Tecnologias Utilizadas
 
@@ -110,7 +110,7 @@ src/
 git clone <repository-url>
 
 # Navegue para o diretório
-cd agropalma-estoque-ti
+cd sistema-estoque-ti
 
 # Instale as dependências
 npm install
@@ -261,9 +261,9 @@ npm run build
 Para suporte técnico ou dúvidas sobre o sistema:
 - Consulte o Assistente de IA integrado
 - Verifique a documentação completa
-- Entre em contato com a equipe de TI da Agropalma
+- Entre em contato com a equipe de TI
 
 ---
 
-**Sistema de Controle de Estoque da TI da Agropalma v.s.**  
-*Versão Sena - Desenvolvido especificamente para as necessidades da Agropalma*
+**Sistema de Controle de Estoque da TI v.s.**  
+*Versão Sena - Desenvolvido para necessidades empresariais de gestão de TI*
